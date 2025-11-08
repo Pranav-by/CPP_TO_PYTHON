@@ -307,17 +307,13 @@ This project is inspired by **compiler design principles** —
 breaking down how real-world compilers like GCC and Clang transform high-level code into another form.
 
 > “The best way to understand a compiler is to build one.”
-> – You just did! 👏
 
 ---
 
 ## 🏁 Final Notes
 
-✨ Your compiler currently supports the most essential parts of C++ syntax.
+✨  Compiler currently supports the most essential parts of C++ syntax.
 It’s clean, modular, and ready to expand.
-
-You can proudly demo this project in **college, GitHub, or interviews** as a practical compiler-design implementation!
-
 ---
 
 ### 🎯 Example Demo Output
