@@ -1,3 +1,5 @@
+#ifndef PARSER_CPP
+#define PARSER_CPP
 #include <memory>
 #include <stdexcept>
 #include "lexer.cpp"
@@ -6,6 +8,7 @@ class ExprAST{
 public:
     virtual ~ExprAST(){}
     virtual void print() const = 0;
+    virtual string toPython(int indent = 0) const = 0;
 };
 
 class StatementAST{
@@ -24,6 +27,9 @@ public:
     void print() const override{
         cout << "Number("<<value<<")";
     }
+    string toPython(int indent = 0) const override {
+        return value;
+    }
 };
 
 class VariableExprAST:public ExprAST{
@@ -33,23 +39,37 @@ public:
     void print() const override{
         cout << "Variable("<<name<<")";
     }
+    string toPython(int indent = 0) const override {
+        // variable name is same in python
+        return name;
+    }
 };
 
 class StringLiteralExprAST:public ExprAST{
+    public:
     string value;
-public:
     StringLiteralExprAST(string val):value(val){}
     void print() const override{
         cout << "String(\""<<value<<"\")";
+    }
+    string toPython(int indent = 0) const override {
+        // produce a quoted Python string; escape backslashes and quotes
+        string s = "\"";
+        for(char c : value){
+            if(c == '\\' || c == '"'){ s.push_back('\\'); s.push_back(c); }
+            else s.push_back(c);
+        }
+        s.push_back('"');
+        return s;
     }
 };
 
 // Binary op e.g. a+b or x > 5
 class BinaryExprAST:public ExprAST{
+    public:
     string op;
     unique_ptr<ExprAST>left;
     unique_ptr<ExprAST>right;
-public:
     BinaryExprAST(string o,unique_ptr<ExprAST>l,unique_ptr<ExprAST>r){
         op = o;
         left = move(l);
@@ -62,14 +82,20 @@ public:
         right->print();
         cout << ")";
     }
+    string toPython(int indent = 0) const override {
+        string mop = op;
+        if(mop == "&&") mop = "and";
+        if(mop == "||") mop = "or";
+        return "(" + left->toPython() + " " + mop + " " + right->toPython() + ")";
+    }
 };
 
 // Define Specific AST Node classes (statements):
 class VarDeclAST:public StatementAST{ //e.g. int x = 10;
+public:
     string varType;
     string varName;
     unique_ptr<ExprAST>initialValue; // can be nullptr if no value is assigned
-public:
     VarDeclAST(string type,string name,unique_ptr<ExprAST>value){
         varType = type;
         varName = name;
@@ -87,9 +113,9 @@ public:
 
 // statement node for assignment e.g. x = 20;
 class AssignmentAST:public StatementAST{
+public:
     string varName;
     unique_ptr<ExprAST>value;
-public:
     AssignmentAST(string name , unique_ptr<ExprAST>val){
         varName = name;
         value = move(val);
@@ -414,34 +440,35 @@ ProgramAST Parser::parse(){
     while(current().type != TokenType::END_OF_FILE) prog.push_back(parseStatement());
     return prog;
 }
-int main(){
-    string input = R"(
-        int x = 10;
-        if (x > 5) {
-            cout << "x greater than 5" << endl;
-        } else if (x == 5) {
-            cout << "x equals 5" << endl;
-        } else {
-            cout << "x less than 5" << endl;
-        }
+// int main(){
+//     string input = R"(
+//         int x = 10;
+//         if (x > 5) {
+//             cout << "x greater than 5" << endl;
+//         } else if (x == 5) {
+//             cout << "x equals 5" << endl;
+//         } else {
+//             cout << "x less than 5" << endl;
+//         }
 
-        for (int i = 0; i < 3; i++) {
-            cout << i << endl;
-        }
+//         for (int i = 0; i < 3; i++) {
+//             cout << i << endl;
+//         }
 
-        while (x > 0) {
-            x = x - 1;
-        }
-    )";
+//         while (x > 0) {
+//             x = x - 1;
+//         }
+//     )";
 
-    Lexer lexer(input);
-    auto tokens = lexer.tokenize();
-    Parser parser(tokens);
-    auto program = parser.parse();
+//     Lexer lexer(input);
+//     auto tokens = lexer.tokenize();
+//     Parser parser(tokens);
+//     auto program = parser.parse();
 
-    cout << "=========== PARSED AST ===========" << endl;
-    for (auto &stmt : program)
-        stmt->print();
+//     cout << "=========== PARSED AST ===========" << endl;
+//     for (auto &stmt : program)
+//         stmt->print();
 
-    return 0;
-}
+//     return 0;
+// }
+#endif

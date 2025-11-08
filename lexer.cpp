@@ -290,33 +290,34 @@ public:
 
 
 };
-int main() {
-    // Sample source code for tokenization
-    string sourceCode = R"(
-    int main() {
-        int a = 10;
-        float b = 3.14;
-        if (a > b) {
-            cout << "a is greater than b" << endl;
-        } else {
-            cout << "a is not greater than b" << endl;
-        }
-        return 0;
-    }
-    )";
+// int main() {
+//     // Sample source code for tokenization
+//     string sourceCode = R"(
+//     int main() {
+//         int a = 10;
+//         float b = 3.14;
+//         int x = 10+5;
+//         if (a > b) {
+//             cout << "a is greater than b" << endl;
+//         } else {
+//             cout << "a is not greater than b" << endl;
+//         }
+//         return 0;
+//     }
+//     )";
     
-    // Create a lexer instance with the source code
-    Lexer lexer(sourceCode);
+//     // Create a lexer instance with the source code
+//     Lexer lexer(sourceCode);
 
-    // Tokenize the source code
-    vector<Token> tokens = lexer.tokenize();
+//     // Tokenize the source code
+//     vector<Token> tokens = lexer.tokenize();
 
-    // Print out each token and its type
-    for (const auto& token : tokens) {
-        cout << "Token: " << token.value << ", Type: " << tokenTypeToString(token.type) << endl;
-    }
+//     // Print out each token and its type
+//     for (const auto& token : tokens) {
+//         cout << "Token: " << token.value << ", Type: " << tokenTypeToString(token.type) << endl;
+//     }
 
-    return 0;
-}
+//     return 0;
+// }
 
 #endif 
